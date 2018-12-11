@@ -1,0 +1,41 @@
+os: unstable
+cache:
+  - node_modules
+environment:
+  GH_TOKEN:
+      0c62c65953239938e5534e41f9332603a38a37dc
+  matrix:
+    - nodejs_version: 8
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - set CI=true
+  - npm install -g npm@latest
+  - set PATH=%APPDATA%\npm;%PATH%
+  - npm install
+  - cd opensource & npm install
+  - cd opensource & npm install sqlite3 --build-from-source --runtime=node --target_arch=x64
+  - cd opensource/frontend & npm install
+  - npm install -g @angular/cli@6.0.8
+  - cd opensource/frontend & ng build
+matrix:
+  fast_finish: true
+build: off
+version: '{build}'
+shallow_clone: true
+clone_depth: 1
+test_script:
+  - npm run build
+artifacts:
+  - path: opensource\dist\*.exe
+    name: bitboost
+deploy:
+  release: bitboost-v$(appveyor_build_version)
+  description: 'Release description'
+  provider: GitHub
+  auth_token:
+    0c62c65953239938e5534e41f9332603a38a37dc
+  artifact:  /opensource/dist/.*\.exe            # upload all exe distributives to release assets
+  draft: false
+  prerelease: false
+  on: 
+    appveyor_repo_tag: false        # deploy on tag push only

@@ -1,0 +1,3 @@
+[submodule "opensoure"]
+    path = opensoure
+    url = https://github.com/Bitboost/BBM-Open-Source-Project.git
